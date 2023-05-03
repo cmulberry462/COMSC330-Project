@@ -614,8 +614,8 @@ def main_program():
     #print(secList)
 
     #create merged dataframe with all sections data
-    Section_Output = pd.DataFrame(secList, columns=['Group_Name', 'Section_Name', '# Students', '# A', '# A-', '# B+', '# B', '# B-','# C+', '# C','# C-',
-      '# D+','# D','# D-', '# F','# I','# W','# P' ,'# NP', 'GPA','Significant'])
+    Section_Output = pd.DataFrame(secList, columns=['Group_Name', 'Section_Name', 'GPA', 'Significant', '# Students', '# A', '# A-', '# B+', '# B', '# B-','# C+', '# C','# C-',
+      '# D+','# D','# D-', '# F','# I','# W','# P' ,'# NP'])
   
       
     #13) Append Section_Output to dict of sec dfs
@@ -623,8 +623,8 @@ def main_program():
 
     section_dfs[name_group] = Section_Output;
     #Group_Output = pd.DataFrame(group_output_data)
-    Group_Output = pd.DataFrame(group_output_data, columns=['Group_Name', '# Sections', '# Students', '# A', '# A-', '# B+', '# B', '# B-','# C+', '# C','# C-',
-      '# D+','# D','# D-', '# F','# I','# W','# P' ,'# NP', 'GPA'])
+    Group_Output = pd.DataFrame(group_output_data, columns=['Group_Name', 'GPA', '# Sections', '# Students', '# A', '# A-', '# B+', '# B', '# B-','# C+', '# C','# C-',
+      '# D+','# D','# D-', '# F','# I','# W','# P' ,'# NP'])
 
 
     #test dataframe display as table
@@ -701,7 +701,7 @@ def goBack():
 
 window = tk.Tk()
 window.title("GPA Calculator")
-window.geometry("800x350")
+window.geometry("1200x350")
 frame = tk.Frame(window)
 frameindex = 0;
 
@@ -785,7 +785,7 @@ def groupListFrame():
   newGroupDF = group_dfs[selectedGroup]
   table.grid_forget()
   runTableDisplayed = False
-  groupTable = Table(frame, dataframe=newGroupDF, showtoolbar=False, showstatusbar=False)
+  groupTable = Table(frame, dataframe=newGroupDF, showtoolbar=False, showstatusbar=False, width = 1000)
   groupTable.show()
   groupTableDisplayed = True
   groupTable.redraw()
@@ -812,7 +812,7 @@ def sectionsFrame():
   back_button.grid(row=1, column=4, padx=5)
 
   newSectionDF = section_dfs[selectedGroup]
-  sectionTable = Table(frame, dataframe=newSectionDF, showtoolbar=False, showstatusbar=False)
+  sectionTable = Table(frame, dataframe=newSectionDF, showtoolbar=False, showstatusbar=False, width = 1000)
   #groupTable.unpack()
   sectionTable.show()
   sectionTable.redraw()
