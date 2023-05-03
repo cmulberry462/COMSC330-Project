@@ -3,8 +3,6 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
 from pandastable import *
-import matplotlib
-import matplotlib.pyplot as plt
 import os
 
 
@@ -65,30 +63,32 @@ num_NP_group        = 0;
 
 def browse_files():
     global directoryName, selectedFile, directory, directory_text
-    file_types = [('Run Files', '*.RUN')]
+    file_types = [('Section Files', '*.SEC'), ('Run Files', '*.RUN'), ('Group Files', '*.GRP')]
     directory = filedialog.askopenfilename(filetypes=file_types)
     directory_text.set(directory)
     directoryName = (os.path.dirname(directory) + "/")
     data_path = directory
     selectedFile = os.path.basename(directory)
 
-    go_button = tk.Button(frame, text="Go", command=main_program)
-    go_button.grid(row=3, column=0, padx=5)
     print("Selected file:", directory)
     print(selectedFile)
+
+    go_button = tk.Button(frame, text="Go", command=main_program, font=("Garmond", 24),width=3, height=2)
+    go_button.pack(side="top", padx=10, pady=10)
+    go_button.pack(side="top")
 
 def getData(directoryName):
 
   #gets files from run file, puts in runfile dataframe
    Run_File = pd.read_csv(directoryName + selectedFile)
    Run_File.to_csv
-  
+
 
    #make list of all group files names in runfile
    global grpList
    grpList = []
    grpList = Run_File.iloc[:, 0].values.tolist()
-  
+
    #get size of group
    sizeOfGrp = len(grpList)
 
@@ -103,11 +103,6 @@ def run_commands():
     df = getData(directoryName)
     table = Table(frame, dataframe=df, showtoolbar=False, showstatusbar=False)
     table.show()
-
-
-
-
-
 
 
 ###BACKEND
@@ -142,7 +137,7 @@ def calculate_gpa(df, grade_column='Letter_Grade'): #creates a new column with t
         'D-': 0.67,
         'F': 0.00,
     }
-    
+
     df['GPA'] = df[grade_column].map(grade_point_map)
     return df
 
@@ -159,8 +154,8 @@ def calculate_group_average(Section_Files):
 
   gpa_group = 0.00; #GPA of group
   gpa_total = 0.00; #Total of all section gpas before divison
- 
-  
+
+
 #For each section in Section_Files dataframe, calculate section GPA and add to GPA total
   for i in range(0, (Section_Files.shape[0])):
     Current_Section = pd.read_csv(directoryName + Section_Files.iloc[i, 0], header = 0, names=['Name', 'Student_ID', 'Letter_Grade']);
@@ -168,7 +163,7 @@ def calculate_group_average(Section_Files):
     calculate_gpa(Current_Section);
     gpa_section = calculate_section_average(Current_Section);
     gpa_total += gpa_section;
-  
+
   #Calculate GPA of group by dividing gpa_total by number of sections
   gpa_group = (gpa_total / (Section_Files.shape[0]));
 
@@ -219,8 +214,8 @@ def count_grades(df, grade_column='Letter_Grade'):
 
     #Retrieve grade from Current section dataframe at specified index
     grade = df[grade_column].iloc[i];
-    
- 
+
+
    #NOT RUNNING PYTHON 3.10, SWITCH STATEMENT MUST BE SERIES OF ELIF
 
    #Operates as a switch statement, throws error if no grade matches input
@@ -275,7 +270,7 @@ def count_grades(df, grade_column='Letter_Grade'):
     else:
       #Error must be thrown describing an incorrect value in field, end program?
       print("error");
-    
+
 def generate_sect_avg_list(Section_Files):
   section_averages = []
   #Iterates through Section_Files df, gets GPA of each section, and appends it to a list of section_averages. 
@@ -314,13 +309,13 @@ def z_compare(Section_Files, gpa_group):
 
     #Perform Z test
     for i in range(0, Section_Files.shape[0]):
-       
+
       #determine significant by calling z_test
       significant = z_test(section_averages[i], Section_Files, gpa_group, stDev);
 
       #append significance value (1 or 0) to sig list
       sig_list.append(bool(significant));
-    
+
     #construct significance dataframe and append to group dataframe
     sig_df = pd.DataFrame(sig_list, columns=['Significant']);
     Section_Files = pd.concat([Section_Files, sig_df], axis = 1);
@@ -409,15 +404,15 @@ def main_program():
     num_W_group         = 0;
     num_P_group         = 0;
     num_NP_group        = 0;
-    
+
     #4) Define int that counts the total number of students in group 
     num_student_group   = 0;
 
     #define seclist
     secList = []
 
-    
-    
+
+
     #5) Define Section_Files dataframe by reading contents of group file for current group
     Section_Files = pd.read_csv(directoryName + current_group)
 
@@ -436,10 +431,10 @@ def main_program():
     print("");
     print("");
 
-   
 
-    
-    
+
+
+
     ######### FOR LOOP B #######################################
     #Purpose: The purpose of For-Loop B is to iterate through all sections in the Section_Files dataframe, gather necessary data, 
     # perform calculations and comparisons, and provide this data in an output dataframe
@@ -494,7 +489,7 @@ def main_program():
       global num_W_section      
       global num_P_section       
       global num_NP_section      
-      
+
       num_A_section       = 0;
       num_Aminus_section  = 0;
       num_Bplus_section   = 0;
@@ -512,10 +507,10 @@ def main_program():
       num_P_section       = 0;
       num_NP_section      = 0;
 
-      
+
       #6) Define df 'Current_Section' which constructs a dataframe for the current section 
       Current_Section = pd.read_csv(directoryName + curr_section, header = 0, names=['Name', 'Student_ID', 'Letter_Grade']);
-      
+
       #Optional display for Current_Section dataframe
       #print("Current_Section dataframe:");
       #display(Current_Section);
@@ -571,17 +566,17 @@ def main_program():
       secList.append(section_output_data)
       #print(section_output_data)
       #12) Define Section Output Dataframe (using section_output_data) 
-    
-      
+
+
       #Optional display for Section_Output dataframe
       #print("Section_Output dataframe:");
       #display(Section_Output); 
       #GPA_mean.append(Section_Output['GPA'])
       #print("");
      # print("");
-    
-      
-    
+
+
+
 
   #9) Define contents of Group Output dataframe
     global group_output_data
@@ -609,40 +604,51 @@ def main_program():
 
 
       }
-    
+
     #10) Define Group Output Dataframe (using group_output_data)
     #print(secList)
 
     #create merged dataframe with all sections data
-    Section_Output = pd.DataFrame(secList, columns=['Group_Name', 'Section_Name', 'GPA', 'Significant', '# Students', '# A', '# A-', '# B+', '# B', '# B-','# C+', '# C','# C-',
+    Section_Output = pd.DataFrame(secList, columns=['Group_Name', 'Section_Name', '# Students', 'Significant',  'GPA', '# A', '# A-', '# B+', '# B', '# B-','# C+', '# C','# C-',
       '# D+','# D','# D-', '# F','# I','# W','# P' ,'# NP'])
-  
-      
+
+
     #13) Append Section_Output to dict of sec dfs
-    
+
 
     section_dfs[name_group] = Section_Output;
     #Group_Output = pd.DataFrame(group_output_data)
-    Group_Output = pd.DataFrame(group_output_data, columns=['Group_Name', 'GPA', '# Sections', '# Students', '# A', '# A-', '# B+', '# B', '# B-','# C+', '# C','# C-',
+    Group_Output = pd.DataFrame(group_output_data, columns=['Group_Name', '# Sections', '# Students', 'GPA', '# A', '# A-', '# B+', '# B', '# B-','# C+', '# C','# C-',
       '# D+','# D','# D-', '# F','# I','# W','# P' ,'# NP'])
 
 
     #test dataframe display as table
-    
+
 
     #11) Append Group_Output to list of output dataframes
     group_dfs[name_group] = Group_Output
 
     #Optional display for Group_Output dataframe
-    
+
     print("Group_Output dataframe:");
     #display(Group_Output); 
     print("");
     print("");
-  print(section_dfs.keys())
-  #print(section_dfs.values())
-  print(group_dfs.keys())
- # print(group_dfs.values())
+#   print(section_dfs.keys())
+#   #print(section_dfs.values())
+#   print(group_dfs.keys())
+#  # print(group_dfs.values())
+    print("These are the .keys()")
+    print(group_dfs.keys())
+    print(section_dfs.keys())
+    
+    print("These are the .values()")
+    print(group_dfs.values())
+    print(section_dfs.items()) 
+
+    print("These are the .items()")
+    print(group_dfs.values())
+    print(section_dfs.items())
   groupsFrame()
 
 
@@ -650,7 +656,6 @@ def main_program():
 def removeExtension(file_name):
     base_name, extension = os.path.splitext(file_name)
     return base_name
-
 
 
 ##This has some problems
@@ -661,15 +666,15 @@ def updateTableValues():
    global groupTable
    global runTableDisplayed
    global frameindex
-   
+
    comboboxSelection = section_combobox.get()
    selectedGroup = removeExtension(comboboxSelection)
    if(selectedGroup != ""):
     if(frameindex != 4):
-      guistack.append(frameindex)
+        guistack.append(frameindex)
     if(runTableDisplayed == True):
         groupListFrame()
-        
+
     elif (groupTableDisplayed == True):
         sectionsFrame()
 
@@ -680,7 +685,7 @@ def updateComboBox():
   new_values = df['Groups'].tolist() 
 
   section_combobox['values'] = []
-    
+
   section_combobox['values'] = new_values
 
 def goBack():
@@ -695,13 +700,13 @@ def goBack():
     groupListFrame();
   if(frameindex == 4):
     sectionsFrame()
-  
+
 
 #gui main 
 
 window = tk.Tk()
 window.title("GPA Calculator")
-window.geometry("1200x350")
+window.state("zoomed")
 frame = tk.Frame(window)
 frameindex = 0;
 
@@ -710,30 +715,34 @@ def homeFrame():
   global directory_text
   global frame, guistack
   global frameindex
+  global frame
+
   global sections
   frameindex = 1;
-  frame.grid_forget()
   frame = tk.Frame(window)
+  frame.pack_forget()
+
   frame.grid(row=0, column=0, padx=10, pady=10)
 
-  section_label = tk.Label(frame, text="Select a runfile:")
-  section_label.grid(row=0, column=2, padx=5)
-
+  section_label = tk.Label(frame, text="Select a runfile:", font=("Garmond", 24))
+  section_label.pack(side="top", pady=10)
   sections = []
 
-  browse_button = tk.Button(frame, text="Browse", command=browse_files, bg="white", fg='black')
-  browse_button.grid(row=1, column=2, padx=5)
+  browse_button = tk.Button(frame, width = 10 , height = 2, font=("Garmond", 24), text="Browse", command=browse_files, bg="white", fg='black')
+  browse_button.pack(side="top", padx=10, pady=10)
 
 
   directory_text = tk.StringVar()
-  directory_label = tk.Label(frame, textvariable=directory_text)
-  directory_label.grid(row=2, column=0, pady=10)
+  directory_label = tk.Label(frame, textvariable = directory_text)
+  directory_label.pack(side="top", padx=50, pady=10)
+
+  frame.pack(side="top", fill="both", expand=True)
 
   guistack.append(frameindex)
 def groupsFrame():
   global table, runTableDisplayed, frame, frameindex, guistack, Group_Files, section_combobox, directory_text, selectedGroup
   frameindex = 2;
-  frame.grid_forget()
+  frame.pack_forget()
   frame = tk.Frame(window)
   frame.grid(row=0, column=0, padx=10, pady=10)
 
@@ -748,10 +757,7 @@ def groupsFrame():
   directory_label.grid(row=2, column=0, pady=10)
 
   section_combobox = ttk.Combobox(frame, values=sections)
-  section_combobox.grid(row=2, column=1, padx=5)
-    
-  select_group_text = tk.Label(frame, text="Select a group:")
-  select_group_text.grid(row=2, column=0, padx=(30,5))
+  section_combobox.grid(row=2, column=3, padx=5)
 
 
   
@@ -764,9 +770,9 @@ def groupListFrame():
   global section_combobox
   global groupTableDisplayed,  runTableDisplayed, guistack
   global frameindex, selectedGroup
-  
+
   frameindex = 3;
-  
+
   frame.grid_forget()
 
   frame = tk.Frame(window)
@@ -778,7 +784,6 @@ def groupListFrame():
   back_button = tk.Button(frame, text="Back", command=goBack, bg="white", fg='black')
   back_button.grid(row=1, column=4, padx=5)
 
-
   comboboxSelection = section_combobox.get()
   selectedGroup = removeExtension(comboboxSelection)
 
@@ -788,21 +793,21 @@ def groupListFrame():
   newGroupDF = group_dfs[selectedGroup]
   table.grid_forget()
   runTableDisplayed = False
-  groupTable = Table(frame, dataframe=newGroupDF, showtoolbar=False, showstatusbar=False, width = 1000)
+  groupTable = Table(frame, dataframe=newGroupDF, showtoolbar=False, showstatusbar=False)
   groupTable.show()
   groupTableDisplayed = True
   groupTable.redraw()
   section_combobox.grid_forget()
-  
+
 
 
 def sectionsFrame():
-  
+
 
   global section_combobox
   global frame, guistack
   global frameindex, selectedGroup
-  
+
   frameindex = 4;
   frame.grid_forget()
   comboboxSelection = section_combobox.get()
@@ -811,15 +816,18 @@ def sectionsFrame():
   frame = tk.Frame(window)
   frame.grid(row=0, column=0, padx=10, pady=10)
 
+  forward_button = tk.Button(frame, text="Forward", command=updateTableValues, bg="white", fg='black')
+  forward_button.grid(row=1, column=3, padx=5)
+
   back_button = tk.Button(frame, text="Back", command=goBack, bg="white", fg='black')
   back_button.grid(row=1, column=4, padx=5)
 
   newSectionDF = section_dfs[selectedGroup]
-  sectionTable = Table(frame, dataframe=newSectionDF, showtoolbar=False, showstatusbar=False, width = 1000)
+  sectionTable = Table(frame, dataframe=newSectionDF, showtoolbar=False, showstatusbar=False)
   #groupTable.unpack()
   sectionTable.show()
   sectionTable.redraw()
-  
+
 
 homeFrame()
 window.mainloop()
@@ -838,10 +846,5 @@ window.mainloop()
 
 
 
-
-
-
-
-  
 
 
