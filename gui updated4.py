@@ -63,7 +63,7 @@ num_NP_group        = 0;
 
 def browse_files():
     global directoryName, selectedFile, directory, directory_text
-    file_types = [('Section Files', '*.SEC'), ('Run Files', '*.RUN'), ('Group Files', '*.GRP')]
+    file_types = [('Run Files', '*.RUN')]
     directory = filedialog.askopenfilename(filetypes=file_types)
     directory_text.set(directory)
     directoryName = (os.path.dirname(directory) + "/")
@@ -80,7 +80,7 @@ def browse_files():
 def getData(directoryName):
 
   #gets files from run file, puts in runfile dataframe
-   Run_File = pd.read_csv(directoryName + selectedFile)
+   Run_File = pd.read_csv(directoryName + selectedFile, skip_blank_lines=TRUE)
    Run_File.to_csv
 
 
@@ -94,7 +94,7 @@ def getData(directoryName):
 
   #Construct Group_Files dataframe
    for i in range(len(grpList)):
-  # tempDF = pd.read_csv(data_path + grpList[i]) #temp dataframe that read in current group
+  # tempDF = pd.read_csv(data_path + grpList[i], skip_blank_lines=TRUE) #temp dataframe that read in current group
      Group_Files = pd.DataFrame(grpList, columns=['Groups']);
    print(Group_Files)
    return Group_Files;
@@ -158,7 +158,7 @@ def calculate_group_average(Section_Files):
 
 #For each section in Section_Files dataframe, calculate section GPA and add to GPA total
   for i in range(0, (Section_Files.shape[0])):
-    Current_Section = pd.read_csv(directoryName + Section_Files.iloc[i, 0], header = 0, names=['Name', 'Student_ID', 'Letter_Grade']);
+    Current_Section = pd.read_csv(directoryName + Section_Files.iloc[i, 0], header = 0, names=['Name', 'Student_ID', 'Letter_Grade'], skip_blank_lines=TRUE);
     gpa_section = 0.00;
     calculate_gpa(Current_Section);
     gpa_section = calculate_section_average(Current_Section);
@@ -276,7 +276,7 @@ def generate_sect_avg_list(Section_Files):
   #Iterates through Section_Files df, gets GPA of each section, and appends it to a list of section_averages. 
   #Returns list of section averages
   for i in range(0, (Section_Files.shape[0])):
-    Current_Section = pd.read_csv(directoryName + Section_Files.iloc[i, 0], header = 0, names=['Name', 'Student_ID', 'Letter_Grade']);
+    Current_Section = pd.read_csv(directoryName + Section_Files.iloc[i, 0], header = 0, names=['Name', 'Student_ID', 'Letter_Grade'], skip_blank_lines=TRUE);
     gpa_section = 0.00;
     calculate_gpa(Current_Section);
     gpa_section = calculate_section_average(Current_Section);
@@ -414,7 +414,7 @@ def main_program():
 
 
     #5) Define Section_Files dataframe by reading contents of group file for current group
-    Section_Files = pd.read_csv(directoryName + current_group)
+    Section_Files = pd.read_csv(directoryName + current_group, skip_blank_lines=TRUE)
 
 
     #6) Define int that counts the number of sections in a group
@@ -509,7 +509,7 @@ def main_program():
 
 
       #6) Define df 'Current_Section' which constructs a dataframe for the current section 
-      Current_Section = pd.read_csv(directoryName + curr_section, header = 0, names=['Name', 'Student_ID', 'Letter_Grade']);
+      Current_Section = pd.read_csv(directoryName + curr_section, header = 0, names=['Name', 'Student_ID', 'Letter_Grade'], skip_blank_lines=TRUE);
 
       #Optional display for Current_Section dataframe
       #print("Current_Section dataframe:");
@@ -815,9 +815,6 @@ def sectionsFrame():
 
   frame = tk.Frame(window)
   frame.grid(row=0, column=0, padx=10, pady=10)
-
-  forward_button = tk.Button(frame, text="Forward", command=updateTableValues, bg="white", fg='black')
-  forward_button.grid(row=1, column=3, padx=5)
 
   back_button = tk.Button(frame, text="Back", command=goBack, bg="white", fg='black')
   back_button.grid(row=1, column=4, padx=5)
