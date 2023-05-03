@@ -748,7 +748,10 @@ def groupsFrame():
   directory_label.grid(row=2, column=0, pady=10)
 
   section_combobox = ttk.Combobox(frame, values=sections)
-  section_combobox.grid(row=2, column=3, padx=5)
+  section_combobox.grid(row=2, column=1, padx=5)
+    
+  select_group_text = tk.Label(frame, text="Select a group:")
+  select_group_text.grid(row=2, column=0, padx=(30,5))
 
 
   
