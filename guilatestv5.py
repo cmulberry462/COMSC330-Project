@@ -699,7 +699,11 @@ def goBack():
   if(frameindex == 4):
     sectionsFrame()
 
-
+# def write_file(path):
+#   path = path + 'outputFile.txt'
+#   with open(path, "w") as file_obj:
+#     for x in range(len(secList)):
+#         file_obj.write(str(group_dfs[secList[x]]) + "\n")
 #gui main 
 
 window = tk.Tk()
