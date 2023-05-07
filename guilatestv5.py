@@ -876,8 +876,10 @@ def createHistogram():
     x_axis = ['A', 'A-', 'B+', 'B', 'B-','C+', 'C','C-','D+','D','D-', 'F','I','W','P' ,'NP']
     y_axis = grade_dfs[selectedSection]
     colors = ['blue', 'royalblue']
+    plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.3)
     plt.bar(x_axis, y_axis, color=colors)
-    plt.title('Number of each grade in:' + selectedSection)
+   
+    plt.title('Number of each grade in: ' + selectedSection, weight='bold')
     plt.ylabel('Number of occurances', fontsize = 14)
     plt.xlabel('Grade Value', fontsize = 14)
     plt.show()
@@ -887,8 +889,10 @@ def createHistogram():
     x_axis = ['A', 'A-', 'B+', 'B', 'B-','C+', 'C','C-','D+','D','D-', 'F','I','W','P' ,'NP']
     y_axis = grade_dfs[selectedGroup]
     colors = ['darkred', 'firebrick']
+    plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.3)
     plt.bar(x_axis, y_axis, color=colors)
-    plt.title('Number of each grade in:' + selectedGroup)
+    
+    plt.title('Number of each grade in: ' + selectedGroup, weight='bold')
     plt.ylabel('Number of occurances', fontsize = 14)
     plt.xlabel('Grade Value', fontsize = 14)
     plt.show()
