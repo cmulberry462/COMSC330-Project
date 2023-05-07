@@ -103,7 +103,7 @@ def getData(directoryName):
 
 def run_commands():
     df = getData(directoryName)
-    table = Table(frame, dataframe=df, showtoolbar=False, showstatusbar=False)
+    table = Table(frame, dataframe=df, showtoolbar=False, showstatusbar=False, editable=False)
     table.show()
 
 
@@ -824,7 +824,7 @@ def groupsFrame():
 
 
   
-  table = Table(frame, dataframe=Group_Files, showtoolbar=False, showstatusbar=False)
+  table = Table(frame, dataframe=Group_Files, showtoolbar=False, showstatusbar=False, editable=False)
   updateComboBox()
   table.show()
   runTableDisplayed = True
@@ -858,7 +858,7 @@ def groupListFrame():
   newGroupDF = group_dfs[selectedGroup]
   table.grid_forget()
   runTableDisplayed = False
-  groupTable = Table(frame, dataframe=newGroupDF, showtoolbar=False, showstatusbar=False,width=1000)
+  groupTable = Table(frame, dataframe=newGroupDF, showtoolbar=False, showstatusbar=False,width=1000, editable=False)
   groupTable.show()
 
   
@@ -952,7 +952,7 @@ def sectionsFrame():
   graph_button.grid(row=5, column=3, padx=5)
 
   newSectionDF = section_dfs[selectedGroup]
-  sectionTable = Table(frame, dataframe=newSectionDF, showtoolbar=False, showstatusbar=False, width=1000)
+  sectionTable = Table(frame, dataframe=newSectionDF, showtoolbar=False, showstatusbar=False, width=1000, editable=False)
   #groupTable.unpack()
   sectionTable.show()
   sectionTable.redraw()
@@ -960,20 +960,3 @@ def sectionsFrame():
 
 homeFrame()
 window.mainloop()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
