@@ -872,9 +872,11 @@ def createHistogram():
     comboboxSelection = section_list_combobox.get() 
     selectedSection = removeExtension(comboboxSelection)
     print(grade_dfs[selectedSection])
+    
     x_axis = ['A', 'A-', 'B+', 'B', 'B-','C+', 'C','C-','D+','D','D-', 'F','I','W','P' ,'NP']
     y_axis = grade_dfs[selectedSection]
-    plt.bar(x_axis, y_axis)
+    colors = ['blue', 'royalblue']
+    plt.bar(x_axis, y_axis, color=colors)
     plt.title('Number of each grade in:' + selectedSection)
     plt.ylabel('Number of occurances', fontsize = 14)
     plt.xlabel('Grade Value', fontsize = 14)
@@ -884,7 +886,8 @@ def createHistogram():
     selectedGroup = removeExtension(comboboxSelection)
     x_axis = ['A', 'A-', 'B+', 'B', 'B-','C+', 'C','C-','D+','D','D-', 'F','I','W','P' ,'NP']
     y_axis = grade_dfs[selectedGroup]
-    plt.bar(x_axis, y_axis)
+    colors = ['darkred', 'firebrick']
+    plt.bar(x_axis, y_axis, color=colors)
     plt.title('Number of each grade in:' + selectedGroup)
     plt.ylabel('Number of occurances', fontsize = 14)
     plt.xlabel('Grade Value', fontsize = 14)
