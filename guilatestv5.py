@@ -4,6 +4,7 @@ from tkinter import filedialog
 from tkinter import ttk
 from pandastable import *
 import os
+import matplotlib.pyplot as plt
 
 
 # Produces a window with GPA Calculation title in it
@@ -20,6 +21,7 @@ directory = "";
 
 group_dfs = {}
 section_dfs = {}
+grade_dfs = {}
 
 guistack = []
 
@@ -381,6 +383,7 @@ def main_program():
     global num_NP_group     
     global group_dfs
     global section_dfs 
+    global grade_dfs 
 
     global Section_Output 
 
@@ -486,7 +489,8 @@ def main_program():
       global num_I_section       
       global num_W_section      
       global num_P_section       
-      global num_NP_section      
+      global num_NP_section   
+      global grade_dfs   
 
       num_A_section       = 0;
       num_Aminus_section  = 0;
@@ -560,8 +564,28 @@ def main_program():
 
       }
 
+      sec_grade_data = [
+        num_A_section,
+        num_Aminus_section,
+        num_Bplus_section,
+        num_B_section,
+        num_Bminus_section,
+        num_Cplus_section,
+        num_C_section,
+        num_Cminus_section,
+        num_Dplus_section,
+        num_D_section,
+        num_Dminus_section,
+        num_F_section,
+        num_I_section,
+        num_W_section,
+        num_P_section,
+        num_NP_section,
+      ]
+
       #append data to seclist
       secList.append(section_output_data)
+      grade_dfs[name_section] = sec_grade_data;
       #print(section_output_data)
       #12) Define Section Output Dataframe (using section_output_data) 
 
@@ -606,6 +630,26 @@ def main_program():
     #10) Define Group Output Dataframe (using group_output_data)
     #print(secList)
 
+
+    group_grade_data = [
+        num_A_group,
+        num_Aminus_group,
+        num_Bplus_group,
+        num_B_group,
+        num_Bminus_group,
+        num_Cplus_group,
+        num_C_group,
+        num_Cminus_group,
+        num_Dplus_group,
+        num_D_group,
+        num_Dminus_group,
+        num_F_group,
+        num_I_group,
+        num_W_group,
+        num_P_group,
+        num_NP_group,
+      ]
+    grade_dfs[name_group] = group_grade_data;
     #create merged dataframe with all sections data
     Section_Output = pd.DataFrame(secList, columns=['Group_Name', 'Section_Name', '# Students', 'Significant',  'GPA', '# A', '# A-', '# B+', '# B', '# B-','# C+', '# C','# C-',
       '# D+','# D','# D-', '# F','# I','# W','# P' ,'# NP'])
@@ -664,6 +708,7 @@ def updateTableValues():
    global groupTable
    global runTableDisplayed
    global frameindex
+   global selectedGroup
 
    comboboxSelection = section_combobox.get()
    selectedGroup = removeExtension(comboboxSelection)
@@ -678,13 +723,24 @@ def updateTableValues():
 
 def updateComboBox():
   global section_combobox
-  df = getData(directoryName)
-  section_combobox['values'] = df.iloc[:, 0].tolist()
-  new_values = df['Groups'].tolist() 
+  global section_list_combobox
+  if(frameindex !=4):
+    df = getData(directoryName)
+    section_combobox['values'] = df.iloc[:, 0].tolist()
+    new_values = df['Groups'].tolist() 
 
-  section_combobox['values'] = []
+    section_combobox['values'] = []
 
-  section_combobox['values'] = new_values
+    section_combobox['values'] = new_values
+  if(frameindex == 4):
+    print(section_dfs.keys())
+    df = section_dfs[selectedGroup]
+    section_list_combobox['values'] = df.iloc[:, 0].tolist()
+    new_values = df['Section_Name'].tolist()
+
+    section_list_combobox['values'] = []
+
+    section_list_combobox['values'] = new_values
 
 def goBack():
   global frame
@@ -699,11 +755,7 @@ def goBack():
   if(frameindex == 4):
     sectionsFrame()
 
-# def write_file(path):
-#   path = path + 'outputFile.txt'
-#   with open(path, "w") as file_obj:
-#     for x in range(len(secList)):
-#         file_obj.write(str(group_dfs[secList[x]]) + "\n")
+
 #gui main 
 
 window = tk.Tk()
@@ -796,6 +848,8 @@ def groupListFrame():
   comboboxSelection = section_combobox.get()
   selectedGroup = removeExtension(comboboxSelection)
 
+  graph_button = tk.Button(frame, text="View Graph", command=createHistogram, bg="white", fg='black')
+  graph_button.grid(row=5, column=3, padx=5)
   # comboboxSelection = section_combobox.get()
   # selectedGroup = removeExtension(comboboxSelection)
 
@@ -804,10 +858,66 @@ def groupListFrame():
   runTableDisplayed = False
   groupTable = Table(frame, dataframe=newGroupDF, showtoolbar=False, showstatusbar=False,width=1000)
   groupTable.show()
+
+  
   groupTableDisplayed = True
   groupTable.redraw()
   section_combobox.grid_forget()
 
+def createHistogram():
+  global selectedSection
+  global selectedGroup
+
+  if(frameindex == 4):
+    comboboxSelection = section_list_combobox.get() 
+    selectedSection = removeExtension(comboboxSelection)
+    print(grade_dfs[selectedSection])
+    x_axis = ['A', 'A-', 'B+', 'B', 'B-','C+', 'C','C-','D+','D','D-', 'F','I','W','P' ,'NP']
+    y_axis = grade_dfs[selectedSection]
+    plt.bar(x_axis, y_axis)
+    plt.title('Number of each grade in:' + selectedSection)
+    plt.ylabel('Number of occurances', fontsize = 14)
+    plt.xlabel('Grade Value', fontsize = 14)
+    plt.show()
+  else:
+    comboboxSelection = section_combobox.get() 
+    selectedGroup = removeExtension(comboboxSelection)
+    x_axis = ['A', 'A-', 'B+', 'B', 'B-','C+', 'C','C-','D+','D','D-', 'F','I','W','P' ,'NP']
+    y_axis = grade_dfs[selectedGroup]
+    plt.bar(x_axis, y_axis)
+    plt.title('Number of each grade in:' + selectedGroup)
+    plt.ylabel('Number of occurances', fontsize = 14)
+    plt.xlabel('Grade Value', fontsize = 14)
+    plt.show()
+    plt.show()
+  
+
+  #df = section_dfs[selectedGroup];
+ # print(selectedSection)
+ # print(selectedSection)
+  #print(selectedSection)
+ # print(df)
+ # secs = df['Section_Name'].values.tolist()
+
+  #df2 = df[df['Section_Name'].isin([selectedSection])]
+
+ # selectedSection = "['" + selectedSection + "']"
+ # print(secs[0])
+ # print(secs[0] == selectedSection)
+ # print(selectedSection)
+ # print(df2)
+ # print(df2)
+  #x_axis =df2.loc[:,('# A', '# A-', '# B+', '# B', '# B-','# C+', '# C','# C-',
+    #  '# D+','# D','# D-', '# F','# I','# W','# P' ,'# NP')].values.tolist() 
+   
+ # y_axis = ['# A', '# A-', '# B+', '# B', '# B-','# C+', '# C','# C-',
+    #  '# D+','# D','# D-', '# F','# I','# W','# P' ,'# NP']
+
+
+  # print(y_axis);
+  
+  #plt.bar(x_axis, y_axis)
+  #plt.show()
 
 
 def sectionsFrame():
@@ -816,6 +926,8 @@ def sectionsFrame():
   global section_combobox
   global frame, guistack
   global frameindex, selectedGroup
+  global section_list_combobox
+  global selectedSection
 
   frameindex = 4;
   frame.grid_forget()
@@ -827,6 +939,19 @@ def sectionsFrame():
 
   back_button = tk.Button(frame, text="Back", command=goBack, bg="white", fg='black')
   back_button.grid(row=1, column=4, padx=5)
+
+  section_list_combobox = ttk.Combobox(frame, values=sections)
+  section_list_combobox.grid(row=5, column=1, padx=5)
+  updateComboBox()
+
+  select_section_text = tk.Label(frame, text="Select a section:")
+  select_section_text.grid(row=5, column=0, padx=(30, 5))
+
+  #comboboxSelection = section_list_combobox.get()
+  #selectedSection = removeExtension(comboboxSelection)
+
+  graph_button = tk.Button(frame, text="View Graph", command=createHistogram, bg="white", fg='black')
+  graph_button.grid(row=5, column=3, padx=5)
 
   newSectionDF = section_dfs[selectedGroup]
   sectionTable = Table(frame, dataframe=newSectionDF, showtoolbar=False, showstatusbar=False, width=1000)
