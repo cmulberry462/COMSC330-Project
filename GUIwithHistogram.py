@@ -869,6 +869,7 @@ def groupListFrame():
 def createHistogram():
   if(frameindex == 4):
     createSectionHistogram()
+    createGroupHistogram()
   else:
      createGroupHistogram()
 
@@ -883,17 +884,17 @@ def createSectionHistogram():
   y_axis = grade_dfs[selectedSection]
   colors = ['blue', 'royalblue']
   plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.3)
-  plt.figure(figsize=(10, 4))
+  plt.figure(figsize=(6, 4))
   plt.bar(x_axis, y_axis, color=colors)
    
-  plt.title('Number of each grade in: ' + selectedSection, weight='bold')
+  plt.title('Number of each grade in section: ' + selectedSection, weight='bold')
   plt.ylabel('Number of occurences', fontsize = 14)
   plt.xlabel('Grade Value', fontsize = 14)
 
   canvas = FigureCanvasTkAgg(plt.gcf(), master=frame)
   canvas.draw()
 
-  canvas.get_tk_widget().grid(row=6, column=0, columnspan=5)
+  canvas.get_tk_widget().grid(row=6, column=0, columnspan=5, sticky='w')
 
 def createGroupHistogram():
     comboboxSelection = section_combobox.get() 
@@ -902,17 +903,17 @@ def createGroupHistogram():
     y_axis = grade_dfs[selectedGroup]
     colors = ['darkred', 'firebrick']
     plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.3)
-    plt.figure(figsize=(10, 4))
+    plt.figure(figsize=(6, 4))
     plt.bar(x_axis, y_axis, color=colors)
     
-    plt.title('Number of each grade in: ' + selectedGroup, weight='bold')
+    plt.title('Number of each grade in group: ' + selectedGroup, weight='bold')
     plt.ylabel('Number of occurences', fontsize = 14)
     plt.xlabel('Grade Value', fontsize = 14)
 
     canvas = FigureCanvasTkAgg(plt.gcf(), master=frame)
     canvas.draw()
 
-    canvas.get_tk_widget().grid(row=6, column=0, columnspan=5)
+    canvas.get_tk_widget().grid(row=6, column=0, columnspan=5, sticky='e', padx=(0,120))
   
 
 
