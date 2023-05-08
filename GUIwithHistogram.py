@@ -8,7 +8,9 @@ import matplotlib.pyplot as plt
 import matplotlib.backends.backend_tkagg as tkagg
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-
+pd.set_option('display.max_rows', None)
+pd.set_option('display.max_columns', None)
+pd.set_option('display.width', None)
 # Produces a window with GPA Calculation title in it
 
 #What we need:
