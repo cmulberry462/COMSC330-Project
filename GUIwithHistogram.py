@@ -8,9 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib.backends.backend_tkagg as tkagg
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-pd.set_option('display.max_rows', None)
-pd.set_option('display.max_columns', None)
-pd.set_option('display.width', None)
+
 # Produces a window with GPA Calculation title in it
 
 #What we need:
@@ -562,7 +560,7 @@ def main_program():
           '# W' :   [num_W_section],
           '# P' :   [num_P_section],
           '# NP' :  [num_NP_section],
-          'GPA' :   [gpa_section],
+          'GPA' :   [round(gpa_section, 3)],
           'Significant' : [significance]
 
 
@@ -626,7 +624,7 @@ def main_program():
         '# W' :   [num_W_group],
         '# P' :   [num_P_group],
         '# NP' :  [num_NP_group],
-        'GPA' :   [gpa_group],
+        'GPA' :   [round(gpa_group, 3)],
 
 
       }
@@ -764,13 +762,13 @@ def goBack():
 def write_file(path, data):
     current = datetime.now()
     str_current = str(current)
-    str_current = current.strftime("%m-%d-%Y_%H:%M:%S") 
+    str_current = current.strftime("%m-%d-%Y_%H-%M-%S") 
 
     with open(path + "Output" + str_current + ".txt", "a") as f:
         for key, value in data.items():
             f.write(f"{value} \n" )
             f.write("\n")
-        f.write("File Created on " + str_current)
+        f.write("File Created on " + str_current + "\n")
 
 
 #gui main 
