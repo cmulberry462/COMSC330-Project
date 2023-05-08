@@ -949,7 +949,7 @@ def sectionsFrame():
   frame.grid(row=0, column=0, padx=10, pady=10)
 
   back_button = tk.Button(frame, text="Back", command=goBack, bg="white", fg='black')
-  back_button.grid(row=1, column=4, padx=5)
+  back_button.grid(row=1, column=3, padx=5)
 
   section_list_combobox = ttk.Combobox(frame, values=sections)
   section_list_combobox.grid(row=5, column=1, padx=5)
