@@ -693,6 +693,8 @@ def main_program():
     print("These are the .items()")
     print(group_dfs.values())
     print(section_dfs.items())
+    
+    write_file(directoryName, section_dfs)
   groupsFrame()
 
 
@@ -756,6 +758,17 @@ def goBack():
     groupListFrame();
   if(frameindex == 4):
     sectionsFrame()
+  
+def write_file(path, data):
+    current = datetime.now()
+    str_current = str(current)
+    str_current = current.strftime("%m-%d-%Y_%H:%M:%S") 
+
+    with open(path + "Output" + str_current + ".txt", "a") as f:
+        for key, value in data.items():
+            f.write(f"{value} \n" )
+            f.write("\n")
+        f.write("File Created on " + str_current)
 
 
 #gui main 
@@ -807,10 +820,10 @@ def groupsFrame():
   frame.grid(row=0, column=0, padx=10, pady=10)
 
   forward_button = tk.Button(frame, text="Forward", command=updateTableValues, bg="white", fg='black')
-  forward_button.grid(row=1, column=3, padx=5)
+  forward_button.grid(row=1, column=4, padx=5)
 
   back_button = tk.Button(frame, text="Back", command=goBack, bg="white", fg='black')
-  back_button.grid(row=1, column=4, padx=5)
+  back_button.grid(row=1, column=3, padx=5)
 
   directory_text = tk.StringVar()
   directory_label = tk.Label(frame, textvariable=directory_text)
@@ -842,10 +855,10 @@ def groupListFrame():
   frame.grid(row=0, column=0, padx=10, pady=10)
 
   forward_button = tk.Button(frame, text="Forward", command=updateTableValues, bg="white", fg='black')
-  forward_button.grid(row=1, column=3, padx=5)
+  forward_button.grid(row=1, column=4, padx=5)
 
   back_button = tk.Button(frame, text="Back", command=goBack, bg="white", fg='black')
-  back_button.grid(row=1, column=4, padx=5)
+  back_button.grid(row=1, column=3, padx=5)
 
   comboboxSelection = section_combobox.get()
   selectedGroup = removeExtension(comboboxSelection)
