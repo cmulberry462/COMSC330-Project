@@ -605,8 +605,24 @@ def main_program():
     #11) Append Group_Output to list of output dataframes
     group_dfs[name_group] = Group_Output
 
-    #Write output to file
-    write_file(directoryName, section_dfs)
+  # get our time variable
+  time = date_time()
+  #set our file name output
+  output_file_name = directoryName + "Output" + time + ".txt"
+
+  #Write output to file
+  with open(output_file_name, "a") as f:
+    f.write(".GRP  files found in the .RUN file \n")
+    f.write("\n")
+  write_file(directoryName, group_dfs, time)
+
+  with open(output_file_name, "a") as f:
+    f.write(".SEC  files found in the .GRP files \n")
+    f.write("\n")
+  write_file(directoryName, section_dfs, time)
+
+  with open(output_file_name, "a") as f:
+    f.write("File Created on " + time + "\n")
   groupsFrame()
 
 #RemoveExtension functionunction removes the path of a file and returns just the file name 
@@ -666,22 +682,24 @@ def goBack():
   if(frameindex == 4):
     sectionsFrame()
   
+#function that outputs the current date and time
+def date_time():
+  #uses datetime.now() to grab the current date and time
+  current = datetime.now()
+  str_current = str(current)
+  #this is the date and time format that we set 
+  str_current = current.strftime("%m-%d-%Y_%H-%M-%S") 
+  #return the time
+  return str_current
+
+
 #This function creates a output file in the same directory of the .RUN file of the output
-def write_file(path, data):
-    #uses datetime.now() to grab the current date and time
-    current = datetime.now()
-    str_current = str(current)
-
-    #this is the date and time format that we set
-    str_current = current.strftime("%m-%d-%Y_%H-%M-%S")  
-
+def write_file(path, data, time):
     #This function writes to the file
-    with open(path + "Output" + str_current + ".txt", "a") as f:
+    with open(path + "Output" + time + ".txt", "a") as f:
         for key, value in data.items():
             f.write(f"{value} \n" )
             f.write("\n")
-        f.write("File Created on " + str_current + "\n")
-
 
 #The main section of the GUI
 # The GUI uses multiple frames to accomplsh our programs goal
