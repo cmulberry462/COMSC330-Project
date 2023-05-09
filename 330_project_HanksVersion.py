@@ -1,22 +1,21 @@
-from datetime import datetime
+import math
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import os
+import pandas as pd
+from pandastable import *
+from PIL import Image, ImageTk
 from tkinter import *
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
-from pandastable import *
-import os
-import matplotlib.pyplot as plt
 
+# this code is so change the settings of pandas so when the output file is produced python does not truncate it
+pd.set_option('display.max_rows', None)
+pd.set_option('display.max_columns', None)
+pd.set_option('display.width', None)
 
-
-# Produces a window with GPA Calculation title in it
-
-#What we need:
-#Button to browse files
-#Graph
-#View grades and individual classes
-#selectedFile = ""
-
+#Defining variables
 directoryName = "";
 selectedFile = "";
 directory = "";
@@ -26,10 +25,6 @@ section_dfs = {}
 grade_dfs = {}
 
 guistack = []
-
-
-
-
 
 num_A_section       = 0;
 num_Aminus_section  = 0;
@@ -65,6 +60,7 @@ num_W_group         = 0;
 num_P_group         = 0;
 num_NP_group        = 0;
 
+#Browse files function which will be used when the user presses the browse files buttons to grab the file path
 def browse_files():
     global directoryName, selectedFile, directory, directory_text
     file_types = [('Run Files', '*.RUN')]
@@ -73,11 +69,6 @@ def browse_files():
     directoryName = (os.path.dirname(directory) + "/")
     data_path = directory
     selectedFile = os.path.basename(directory)
-
-    print("Selected file:", directory)
-    print(selectedFile)
-
-
 
 def getData(directoryName):
 
@@ -98,33 +89,17 @@ def getData(directoryName):
    for i in range(len(grpList)):
   # tempDF = pd.read_csv(data_path + grpList[i], skip_blank_lines=TRUE) #temp dataframe that read in current group
      Group_Files = pd.DataFrame(grpList, columns=['Groups']);
-   print(Group_Files)
    return Group_Files;
 
 def run_commands():
     df = getData(directoryName)
-    table = Table(frame, dataframe=df, showtoolbar=False, showstatusbar=False)
+    table = Table(frame, dataframe=df, showtoolbar=False, showstatusbar=False, editable=False)
     table.show()
-
-
-###BACKEND
-import json
-from pprint import pprint
-
-
-import seaborn as sns
-import pandas as pd
-import statistics
-import math
-import os
 
 data_path = os.path.dirname(os.path.realpath(__file__))
 
-
-
-
-
-def calculate_gpa(df, grade_column='Letter_Grade'): #creates a new column with the GPA based on letter grade
+#creates a new column with the GPA based on letter grade
+def calculate_gpa(df, grade_column='Letter_Grade'): 
     grade_point_map = {
         'A': 4.00,
         'A-': 3.67,
@@ -326,11 +301,8 @@ def z_compare(Section_Files, gpa_group):
   return Section_Files;   
 
 
-
+#MAIN  Program
 def main_program():
-  #MAIN  Program
-
-  #Define output dataframes
 
   #Input files & construct df
   global Group_Files
@@ -428,16 +400,6 @@ def main_program():
     #8) Add 'Significance' column to Section_Files dataframe by calling z_compare. Determine significance of each section
     Section_Files = z_compare(Section_Files, gpa_group);
 
-    #Optional display for Section_Files dataframe
-    print("Section_Files dataframe:");
-    #display(Section_Files);
-    print("");
-    print("");
-
-
-
-
-
     ######### FOR LOOP B #######################################
     #Purpose: The purpose of For-Loop B is to iterate through all sections in the Section_Files dataframe, gather necessary data, 
     # perform calculations and comparisons, and provide this data in an output dataframe
@@ -515,12 +477,6 @@ def main_program():
       #6) Define df 'Current_Section' which constructs a dataframe for the current section 
       Current_Section = pd.read_csv(directoryName + curr_section, header = 0, names=['Name', 'Student_ID', 'Letter_Grade'], skip_blank_lines=TRUE);
 
-      #Optional display for Current_Section dataframe
-      #print("Current_Section dataframe:");
-      #display(Current_Section);
-      #print("");
-      #print("");
-
       #7) Determine number of students in a section by counting rows in Current_Section dataframe
       num_student_section = Current_Section.shape[0];
       num_student_group += num_student_section; #add to total students in group
@@ -528,11 +484,6 @@ def main_program():
       #8) Call calculate_gpa for Current_Section
       calculate_gpa(Current_Section);
 
-      #Optional display for updated Current_Section dataframe
-      #print("Updated Current_Section dataframe (With GPAs):");
-      #display(Current_Section);
-      #print("");
-     # print("");
       #9) Call calculate_section_average on Current_Section to determine section GPA.
       gpa_section = calculate_section_average(Current_Section);
 
@@ -560,7 +511,7 @@ def main_program():
           '# W' :   [num_W_section],
           '# P' :   [num_P_section],
           '# NP' :  [num_NP_section],
-          'GPA' :   [gpa_section],
+          'GPA' :   [round(gpa_section, 3)],
           'Significant' : [significance]
 
 
@@ -588,19 +539,6 @@ def main_program():
       #append data to seclist
       secList.append(section_output_data)
       grade_dfs[name_section] = sec_grade_data;
-      #print(section_output_data)
-      #12) Define Section Output Dataframe (using section_output_data) 
-
-
-      #Optional display for Section_Output dataframe
-      #print("Section_Output dataframe:");
-      #display(Section_Output); 
-      #GPA_mean.append(Section_Output['GPA'])
-      #print("");
-     # print("");
-
-
-
 
   #9) Define contents of Group Output dataframe
     global group_output_data
@@ -624,13 +562,12 @@ def main_program():
         '# W' :   [num_W_group],
         '# P' :   [num_P_group],
         '# NP' :  [num_NP_group],
-        'GPA' :   [gpa_group],
+        'GPA' :   [round(gpa_section, 3)],
 
 
       }
 
     #10) Define Group Output Dataframe (using group_output_data)
-    #print(secList)
 
 
     group_grade_data = [
@@ -665,25 +602,18 @@ def main_program():
     Group_Output = pd.DataFrame(group_output_data, columns=['Group_Name', '# Sections', '# Students', 'GPA', '# A', '# A-', '# B+', '# B', '# B-','# C+', '# C','# C-',
       '# D+','# D','# D-', '# F','# I','# W','# P' ,'# NP'])
 
-
-    #test dataframe display as table
-
-
     #11) Append Group_Output to list of output dataframes
     group_dfs[name_group] = Group_Output
 
-    #Optional display for Group_Output dataframe
+    #Write output to file
     write_file(directoryName, section_dfs)
   groupsFrame()
 
-
-
+#RemoveExtension functionunction removes the path of a file and returns just the file name 
 def removeExtension(file_name):
     base_name, extension = os.path.splitext(file_name)
     return base_name
 
-
-##This has some problems
 
 def updateTableValues():
 
@@ -716,13 +646,11 @@ def updateComboBox():
 
     section_combobox['values'] = new_values
   if(frameindex == 4):
-    print(section_dfs.keys())
     df = section_dfs[selectedGroup]
     section_list_combobox['values'] = df.iloc[:, 0].tolist()
     new_values = df['Section_Name'].tolist()
 
     section_list_combobox['values'] = []
-
     section_list_combobox['values'] = new_values
 
 def goBack():
@@ -737,90 +665,130 @@ def goBack():
     groupListFrame();
   if(frameindex == 4):
     sectionsFrame()
-
+  
+#This function creates a output file in the same directory of the .RUN file of the output
 def write_file(path, data):
+    #uses datetime.now() to grab the current date and time
     current = datetime.now()
     str_current = str(current)
-    str_current = current.strftime("%m-%d-%Y_%H:%M:%S") 
 
+    #this is the date and time format that we set
+    str_current = current.strftime("%m-%d-%Y_%H-%M-%S")  
+
+    #This function writes to the file
     with open(path + "Output" + str_current + ".txt", "a") as f:
         for key, value in data.items():
             f.write(f"{value} \n" )
             f.write("\n")
-        f.write("File Created on " + str_current)
+        f.write("File Created on " + str_current + "\n")
 
 
-#gui main 
+#The main section of the GUI
+# The GUI uses multiple frames to accomplsh our programs goal
+# To move frames we use pack_forget() or  grid_forget() to clear the frame
 
+from PIL import Image, ImageTk
+
+#Sets our frame as window
 window = tk.Tk()
 window.title("GPA Calculator")
 window.state("zoomed")
 frame = tk.Frame(window)
 frameindex = 0;
 
+#These global variables are used for the pictures of the forward and back buttons
+global back_image, back_photo, forward_image, forward_photo
+
+forward_image = Image.open("forward.png")
+forward_photo = ImageTk.PhotoImage(forward_image)
+
+back_image = Image.open("back.png")
+back_photo = ImageTk.PhotoImage(back_image)
+
+#This is the homeFrame function. 
+#It sets up the first frame the user sees when they open the .exe file
 def homeFrame():
+  #defines global variables
   global section_combobox
   global directory_text
   global frame, guistack
   global frameindex
   global frame
-
   global sections
+
+  #creates frame
   frameindex = 1;
   frame = tk.Frame(window)
+
+  #clears current frame in case the user pressed the back button on the second frame
   frame.pack_forget()
 
+  #sets up our grid
   frame.grid(row=0, column=0, padx=10, pady=10)
 
+  #creates a label telling the user to select a runfile
   section_label = tk.Label(frame, text="Select a runfile:", font=("Garmond", 24))
   section_label.pack(side="top", pady=10)
   sections = []
 
+  # Creates the browse button so the user can browse files
   browse_button = tk.Button(frame, width = 10 , height = 2, font=("Garmond", 24), text="Browse", command=browse_files, bg="white", fg='black')
   browse_button.pack(side="top", padx=10, pady=10)
+
+  #creates the go button the user presses to enter the next frame
   go_button = tk.Button(frame, text="Go", command=main_program, font=("Garmond", 24),width=3, height=2)
   go_button.pack(side="top", padx=10, pady=10)
   go_button.pack(side="top")
 
+  #creates a label that shows the user file path once they select a file
   directory_text = tk.StringVar()
   directory_label = tk.Label(frame, textvariable = directory_text)
   directory_label.pack(side="top", padx=50, pady=10)
 
-  
-
+  #packs and loads the frame
   frame.pack(side="top", fill="both", expand=True)
 
   guistack.append(frameindex)
+
+#The next frame is called thegroupsFrame() This is the next frame that displays the grp files in the .RUN file
 def groupsFrame():
+  #define variables
   global table, runTableDisplayed, frame, frameindex, guistack, Group_Files, section_combobox, directory_text, selectedGroup
+
+  #Set and clear frame
   frameindex = 2;
   frame.pack_forget()
   frame = tk.Frame(window)
   frame.grid(row=0, column=0, padx=10, pady=10)
 
-  forward_button = tk.Button(frame, text="Forward", command=updateTableValues, bg="white", fg='black')
-  forward_button.grid(row=1, column=4, padx=5)
+  #forward button will bring the user to the next frame
+  forward_button = tk.Button(frame, image = forward_photo, command=updateTableValues, bg="white", fg='black')
+  forward_button.grid(row=0, column=4)
 
-  back_button = tk.Button(frame, text="Back", command=goBack, bg="white", fg='black')
-  back_button.grid(row=1, column=3, padx=5)
+  #back button will bring the user to the last frame
+  back_button = tk.Button(frame, image = back_photo, command=goBack, bg="white", fg='black')
+  back_button.grid(row=0, column=3)
 
   directory_text = tk.StringVar()
   directory_label = tk.Label(frame, textvariable=directory_text)
   directory_label.grid(row=2, column=0, pady=10)
 
+  #dropdown menue of all the groups
   section_combobox = ttk.Combobox(frame, values=sections)
   section_combobox.grid(row=2, column=1, padx=5)
 
   select_group_text = tk.Label(frame, text="Select a group:")
   select_group_text.grid(row=2, column=0, padx=(30,5))
 
-
-  
-  table = Table(frame, dataframe=Group_Files, showtoolbar=False, showstatusbar=False)
+  #creates the table in the code that displays the dataframe
+  table = Table(frame, dataframe=Group_Files, showtoolbar=False, showstatusbar=False, editable=False)
   updateComboBox()
   table.show()
   runTableDisplayed = True
+
+#Creates frame that displays all the groups 
 def groupListFrame():
+  #deines variables
   global frame
   global section_combobox
   global groupTableDisplayed,  runTableDisplayed, guistack
@@ -833,149 +801,137 @@ def groupListFrame():
   frame = tk.Frame(window)
   frame.grid(row=0, column=0, padx=10, pady=10)
 
-  forward_button = tk.Button(frame, text="Forward", command=updateTableValues, bg="white", fg='black')
-  forward_button.grid(row=1, column=4, padx=5)
-
-  back_button = tk.Button(frame, text="Back", command=goBack, bg="white", fg='black')
-  back_button.grid(row=1, column=3, padx=5)
+  #creates froward and back buttons
+  forward_button = tk.Button(frame, image = forward_photo , command=updateTableValues, bg="white", fg='black')
+  forward_button.grid(row=0, column=4, padx=5)
+  back_button = tk.Button(frame, image = back_photo, command=goBack, bg="white", fg='black')
+  back_button.grid(row=0, column=3, padx=5)
 
   comboboxSelection = section_combobox.get()
   selectedGroup = removeExtension(comboboxSelection)
 
+  #creates the button to display the graph
   graph_button = tk.Button(frame, text="View Graph", command=createHistogram, bg="white", fg='black')
-  graph_button.grid(row=4, column=3, padx=2)
-  # comboboxSelection = section_combobox.get()
-  # selectedGroup = removeExtension(comboboxSelection)
+  graph_button.grid(row=5, column=3, padx=5)
 
+  #creates the table that displays the selected group
   newGroupDF = group_dfs[selectedGroup]
   table.grid_forget()
   runTableDisplayed = False
-  groupTable = Table(frame, dataframe=newGroupDF, showtoolbar=False, showstatusbar=False,width=1000)
+  groupTable = Table(frame, dataframe=newGroupDF, showtoolbar=False, showstatusbar=False,width=1000, editable=False)
   groupTable.show()
 
-  
+  #displays table
   groupTableDisplayed = True
   groupTable.redraw()
   section_combobox.grid_forget()
 
 def createHistogram():
+  if(frameindex == 4):
+    createSectionHistogram()
+    createGroupHistogram()
+  else:
+     createGroupHistogram()
+
+#creates section histogram
+def createSectionHistogram():
+    #define variables
   global selectedSection
   global selectedGroup
 
-  if(frameindex == 4):
-    comboboxSelection = section_list_combobox.get() 
-    selectedSection = removeExtension(comboboxSelection)
-    print(grade_dfs[selectedSection])
+  comboboxSelection = section_list_combobox.get() 
+  selectedSection = removeExtension(comboboxSelection)
     
-    x_axis = ['A', 'A-', 'B+', 'B', 'B-','C+', 'C','C-','D+','D','D-', 'F','I','W','P' ,'NP']
-    y_axis = grade_dfs[selectedSection]
-    colors = ['blue', 'royalblue']
-    plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.3)
-    plt.bar(x_axis, y_axis, color=colors)
+  #sets the x axis to the grades and y axis to the selected section
+  x_axis = ['A', 'A-', 'B+', 'B', 'B-','C+', 'C','C-','D+','D','D-', 'F','I','W','P' ,'NP']
+  y_axis = grade_dfs[selectedSection]
+
+  #cosmetic stuff to make the graphs more readable
+  colors = ['blue', 'royalblue']
+  plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.3)
+  plt.figure(figsize=(6, 4))
+  plt.bar(x_axis, y_axis, color=colors)
    
-    plt.title('Number of each grade in: ' + selectedSection, weight='bold')
-    plt.ylabel('Number of occurances', fontsize = 14)
-    plt.xlabel('Grade Value', fontsize = 14)
-    plt.show()
-  else:
+   # set our title and axis labels
+  plt.title('Number of each grade in section: ' + selectedSection, weight='bold')
+  plt.ylabel('Number of occurences', fontsize = 14)
+  plt.xlabel('Grade Value', fontsize = 14)
+
+  #add figure to the GUI
+  canvas = FigureCanvasTkAgg(plt.gcf(), master=frame)
+  canvas.draw()
+  canvas.get_tk_widget().grid(row=6, column=0, columnspan=5, sticky='w')
+
+#Creates the group histogram
+def createGroupHistogram():
     comboboxSelection = section_combobox.get() 
     selectedGroup = removeExtension(comboboxSelection)
+
+    #sets the x axis to the grades and y axis to the selected group
     x_axis = ['A', 'A-', 'B+', 'B', 'B-','C+', 'C','C-','D+','D','D-', 'F','I','W','P' ,'NP']
     y_axis = grade_dfs[selectedGroup]
+    
+    #cosmetic stuff to make the graphs more readable
     colors = ['darkred', 'firebrick']
     plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.3)
+    plt.figure(figsize=(6, 4))
+
+    #set graph as a bar graph
     plt.bar(x_axis, y_axis, color=colors)
     
-    plt.title('Number of each grade in: ' + selectedGroup, weight='bold')
-    plt.ylabel('Number of occurances', fontsize = 14)
+    # set our title and axis labels
+    plt.title('Number of each grade in group: ' + selectedGroup, weight='bold')
+    plt.ylabel('Number of occurences', fontsize = 14)
     plt.xlabel('Grade Value', fontsize = 14)
-    plt.show()
-    plt.show()
-  
 
-  #df = section_dfs[selectedGroup];
- # print(selectedSection)
- # print(selectedSection)
-  #print(selectedSection)
- # print(df)
- # secs = df['Section_Name'].values.tolist()
-
-  #df2 = df[df['Section_Name'].isin([selectedSection])]
-
- # selectedSection = "['" + selectedSection + "']"
- # print(secs[0])
- # print(secs[0] == selectedSection)
- # print(selectedSection)
- # print(df2)
- # print(df2)
-  #x_axis =df2.loc[:,('# A', '# A-', '# B+', '# B', '# B-','# C+', '# C','# C-',
-    #  '# D+','# D','# D-', '# F','# I','# W','# P' ,'# NP')].values.tolist() 
-   
- # y_axis = ['# A', '# A-', '# B+', '# B', '# B-','# C+', '# C','# C-',
-    #  '# D+','# D','# D-', '# F','# I','# W','# P' ,'# NP']
+    #add figure to the GUI
+    canvas = FigureCanvasTkAgg(plt.gcf(), master=frame)
+    canvas.draw()
+    canvas.get_tk_widget().grid(row=6, column=0, columnspan=5, sticky='e', padx=(0,120))
 
 
-  # print(y_axis);
-  
-  #plt.bar(x_axis, y_axis)
-  #plt.show()
-
-
+# creates the section frame
 def sectionsFrame():
 
-
+  #define variables  
   global section_combobox
   global frame, guistack
   global frameindex, selectedGroup
   global section_list_combobox
   global selectedSection
 
+  #set frame
   frameindex = 4;
   frame.grid_forget()
   comboboxSelection = section_combobox.get()
   selectedGroup = removeExtension(comboboxSelection)
-
   frame = tk.Frame(window)
   frame.grid(row=0, column=0, padx=10, pady=10)
 
-  back_button = tk.Button(frame, text="Back", command=goBack, bg="white", fg='black')
-  back_button.grid(row=1, column=4, padx=5)
+  #create back button
+  back_button = tk.Button(frame, image = back_photo, command=goBack, bg="white", fg='black')
+  back_button.grid(row=0, column=3, padx=5)
 
+  #create dropdown menue for the sections
   section_list_combobox = ttk.Combobox(frame, values=sections)
   section_list_combobox.grid(row=5, column=1, padx=5)
   updateComboBox()
 
+  #put text in the combo box telling the user to select a file
   select_section_text = tk.Label(frame, text="Select a section:")
   select_section_text.grid(row=5, column=0, padx=(30, 5))
 
-  #comboboxSelection = section_list_combobox.get()
-  #selectedSection = removeExtension(comboboxSelection)
-
+  #creates button that displays the graph
   graph_button = tk.Button(frame, text="View Graph", command=createHistogram, bg="white", fg='black')
   graph_button.grid(row=5, column=3, padx=5)
 
+  #creates the table that displays the output section data
   newSectionDF = section_dfs[selectedGroup]
-  sectionTable = Table(frame, dataframe=newSectionDF, showtoolbar=False, showstatusbar=False, width=1000)
-  #groupTable.unpack()
+  sectionTable = Table(frame, dataframe=newSectionDF, showtoolbar=False, showstatusbar=False, width=1000, editable=False)
   sectionTable.show()
   sectionTable.redraw()
 
 
+#creates the GUI
 homeFrame()
 window.mainloop()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
